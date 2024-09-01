@@ -1,3 +1,4 @@
+//INCOMPLETE
 /*Write a C program to implement a ragged array dynamically.*/
 #include<stdio.h>
 #include<stdlib.h>
@@ -13,12 +14,14 @@ void main(){
 		matrix[i] = (int*) calloc(col+1, sizeof(int));
 		printf("\nENter %d row elements", i+1);
 		for(j=1;j<=col;j++)
-			scanf("%d", &table[i][j]);
-		table[i][0] = col;
-		printf("size of row number [%d] = %d", i+1, table[i][0]);
+			scanf("%d", &matrix[i][j]);
+		matrix[i][0] = col;
+		printf("size of row number [%d] = %d", i+1, matrix[i][0]);
 	}
-	table[i] = NULL;
+	matrix[i] = NULL;
 	for(i=0;i<row;i++){
 	printf("displaying %d row elements\n", i+1);
-	for(j=0;j<=*table[i];j++)
+	for(j=0;j<=*matrix[i];j++)
 		printf("%5d", matrix[i][j]); 
+	}
+}
