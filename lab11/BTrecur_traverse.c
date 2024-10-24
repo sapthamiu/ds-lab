@@ -15,34 +15,51 @@ struct Node* createNode(int data) {
     return newNode;
 }
 
-// Iterative function to insert a node in the binary tree
-struct Node* insertNode(struct Node* root, int data) {
-    struct Node* newNode = createNode(data);
+struct Node* createBinTree(struct Node* root, int item) {
+    struct Node *temp;  // Node to be inserted
+    struct Node *prev;  // Parent node
+    struct Node *cur;   // Current node
+    char direction[20]; // String to take directions
+    int i;
+
+    temp = createNode(item);
+
     if (root == NULL) {
-        return newNode; // if tree is empty
+        return temp;  // If the tree is empty, return the new node as the root
     }
 
-    struct Node* current = root;
-    struct Node* parent = NULL;
+    printf("Enter the directions to insert the item (L for left, R for right):\n");
+    scanf("%s", direction);
 
-    while (current != NULL) {
-        parent = current;
-        if (data < current->data) {
-            current = current->left;
-        } else {
-            current = current->right;
+    prev = NULL;
+    cur = root;
+
+    // Traverse the tree based on the given direction string
+    for (i = 0; i < strlen(direction); i++) {
+        prev = cur;
+
+        if (toupper(direction[i]) == 'L') {
+            cur = cur->left;
+        } else if (toupper(direction[i]) == 'R') {
+            cur = cur->right;
+        }
+
+        // If we reach a NULL position before the end of the string, break
+        if (cur == NULL && i != strlen(direction) - 1) {
+            printf("Invalid direction. No node found at given path.\n");
+            return root;
         }
     }
 
-    if (data < parent->data) {
-        parent->left = newNode;
+    // Insert the node as either a left or right child
+    if (toupper(direction[i - 1]) == 'L') {
+        prev->left = temp;
     } else {
-        parent->right = newNode;
+        prev->right = temp;
     }
 
     return root;
 }
-
 // Recursive In-order Traversal (Left, Root, Right)
 void inorderTraversal(struct Node* root) {
     if (root == NULL) {
@@ -78,13 +95,14 @@ int main() {
     struct Node* root = NULL;
     int choice, value;
 
-    while (1) {
+    
         printf("\nBinary Tree Menu:\n");
         printf("1. Insert Node\n");
         printf("2. In-order Traversal\n");
         printf("3. Pre-order Traversal\n");
         printf("4. Post-order Traversal\n");
         printf("5. Exit\n");
+    while (1) {
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
