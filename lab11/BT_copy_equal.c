@@ -1,27 +1,98 @@
 #include <stdio.h>
 #include <stdlib.h>
-
-// Define the structure of a Node in the Binary Tree
-struct Node {
+#include<string.h>
+#include<ctype.h>
+typedef struct Node {
     int data;
     struct Node* left;
     struct Node* right;
-};
+}NODE;
 
-// Function prototypes
-struct Node* createNode(int data);
-struct Node* insertNode(struct Node* root, int data);
-struct Node* copyTree(struct Node* root);
-int areEqual(struct Node* root1, struct Node* root2);
-void inorderTraversal(struct Node* root);
+NODE* createNode(int data) {
+    NODE* newNode = (NODE*)malloc(sizeof(NODE));
+    newNode->data = data;
+    newNode->left = newNode->right = NULL;
+    return newNode;
+}
+NODE* createBT(NODE* root, int data){
+    NODE *newnode;
+    NODE *child;
+    NODE *parent;
+    char direction[20];//starting from root
+    int i;
 
-// Main function with menu
-int main() {
-    struct Node* root1 = NULL;
-    struct Node* root2 = NULL;
+    newnode = createNode(data);
+    if (root == NULL)
+        return newnode;
+  
+    printf("Enter the directions to insert the data (L for left, R for right):");
+    scanf("%s", direction);
+
+    child = NULL;
+    parent = root;
+
+    for (i = 0; i < strlen(direction); i++) {
+        child = parent;
+
+        if (toupper(direction[i]) == 'L'){
+            parent = parent->left;
+        }
+        else if (toupper(direction[i]) == 'R'){
+            parent = parent->right;
+        }
+
+        if (parent == NULL && i != strlen(direction) - 1) {
+            printf("Invalid direction. No node found at given path.\n");
+            return root;
+        }
+    }
+    if (toupper(direction[i - 1]) == 'L'){
+        child->left = newnode;
+    }
+    else{
+        child->right = newnode;
+    }
+    return root;
+}
+
+NODE* copyTree(NODE* root) {
+    if (root == NULL) {
+        return NULL;
+    }
+
+    NODE* newNode = createNode(root->data);
+    newNode->left = copyTree(root->left);
+    newNode->right = copyTree(root->right);
+
+    return newNode;
+}
+
+int areEqual(NODE* root1, NODE* root2) {
+    if (root1 == NULL && root2 == NULL) {
+        return 1; // Both are NULL, so they are equal
+    }
+    if (root1 == NULL || root2 == NULL) {
+        return 0; // One of them is NULL, they are not equal
+    }
+    return (root1->data == root2->data) &&
+           areEqual(root1->left, root2->left) &&
+           areEqual(root1->right, root2->right);
+}
+
+void inorder(NODE* root) {
+    if (root == NULL) {
+        return;
+    }
+    inorder(root->left);
+    printf("%d ", root->data);
+    inorder(root->right);
+}
+
+void main() {
+    NODE* root1 = NULL;
+    NODE* root2 = NULL;
     int choice, data;
 
-    while (1) {
         printf("\nMenu:\n");
         printf("1. Insert into Tree 1\n");
         printf("2. Insert into Tree 2\n");
@@ -30,6 +101,7 @@ int main() {
         printf("5. Display In-order Traversal of Tree 1\n");
         printf("6. Display In-order Traversal of Tree 2\n");
         printf("7. Exit\n");
+    while (1) {
         printf("Enter your choice: ");
         scanf("%d", &choice);
 
@@ -37,14 +109,14 @@ int main() {
             case 1:
                 printf("Enter data to insert into Tree 1: ");
                 scanf("%d", &data);
-                root1 = insertNode(root1, data);
+                root1 = createBT(root1, data);
                 printf("Inserted %d into Tree 1.\n", data);
                 break;
 
             case 2:
                 printf("Enter data to insert into Tree 2: ");
                 scanf("%d", &data);
-                root2 = insertNode(root2, data);
+                root2 = createBT(root2, data);
                 printf("Inserted %d into Tree 2.\n", data);
                 break;
 
@@ -63,83 +135,22 @@ int main() {
 
             case 5:
                 printf("In-order Traversal of Tree 1: ");
-                inorderTraversal(root1);
+                inorder(root1);
                 printf("\n");
                 break;
 
             case 6:
                 printf("In-order Traversal of Tree 2: ");
-                inorderTraversal(root2);
+                inorder(root2);
                 printf("\n");
                 break;
 
             case 7:
-                printf("Exiting...\n");
+                printf("Exiting\n");
                 exit(0);
 
             default:
-                printf("Invalid choice! Please try again.\n");
+                printf("Invalid choice\n");
         }
     }
-
-    return 0;
-}
-
-// Function to insert a node in the binary tree
-struct Node* insertNode(struct Node* root, int data) {
-    if (root == NULL) {
-        return createNode(data);
-    }
-
-    if (data < root->data) {
-        root->left = insertNode(root->left, data);
-    } else if (data > root->data) {
-        root->right = insertNode(root->right, data);
-    }
-
-    return root;
-}
-
-// Function to create a new node
-struct Node* createNode(int data) {
-    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
-    newNode->data = data;
-    newNode->left = newNode->right = NULL;
-    return newNode;
-}
-
-// Function to create a copy of a binary tree
-struct Node* copyTree(struct Node* root) {
-    if (root == NULL) {
-        return NULL;
-    }
-
-    struct Node* newNode = createNode(root->data);
-    newNode->left = copyTree(root->left);
-    newNode->right = copyTree(root->right);
-
-    return newNode;
-}
-
-// Function to check if two binary trees are equal
-int areEqual(struct Node* root1, struct Node* root2) {
-    if (root1 == NULL && root2 == NULL) {
-        return 1; // Both are NULL, so they are equal
-    }
-    if (root1 == NULL || root2 == NULL) {
-        return 0; // One of them is NULL, they are not equal
-    }
-    return (root1->data == root2->data) &&
-           areEqual(root1->left, root2->left) &&
-           areEqual(root1->right, root2->right);
-}
-
-// Function to perform in-order traversal of a binary tree
-void inorderTraversal(struct Node* root) {
-    if (root == NULL) {
-        return;
-    }
-    inorderTraversal(root->left);
-    printf("%d ", root->data);
-    inorderTraversal(root->right);
 }

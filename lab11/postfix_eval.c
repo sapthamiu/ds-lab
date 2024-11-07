@@ -2,65 +2,49 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-// Define the structure of a node in the expression tree
-struct Node {
+typedef struct Node {
     char data;
     struct Node *left, *right;
-};
+}NODE;
 
-// Function to create a new node
-struct Node* createNode(char data) {
-    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
-    newNode->data = data;
-    newNode->left = newNode->right = NULL;
-    return newNode;
+NODE* createNode(char data) {
+    NODE* newnode = malloc(sizeof(NODE));
+    newnode->data = data;
+    newnode->left = newnode->right = NULL;
+    return newnode;
 }
 
-// Function to check if the character is an operator
 int isOperator(char ch) {
     return (ch == '+' || ch == '-' || ch == '*' || ch == '/');
 }
 
-// Function to build the expression tree from postfix expression
-struct Node* constructTree(char postfix[]) {
-    struct Node* stack[100];
+NODE* constructTree(char postfix[]) {
+    NODE* stack[100];
     int top = -1;
 
-    // Traverse through every character of the postfix expression
     for (int i = 0; postfix[i] != '\0'; i++) {
-        // If the character is an operand, push it onto the stack
         if (isalnum(postfix[i])) {
             stack[++top] = createNode(postfix[i]);
         }
-        // If the character is an operator
         else if (isOperator(postfix[i])) {
-            struct Node* newNode = createNode(postfix[i]);
+            NODE* newnode = createNode(postfix[i]);
 
-            // Pop two operands from the stack and attach them to the new operator node
-            newNode->right = stack[top--];  // Right child
-            newNode->left = stack[top--];   // Left child
-
-            // Push the new node back onto the stack
-            stack[++top] = newNode;
+            newnode->right = stack[top--];
+            newnode->left = stack[top--];  
+            stack[++top] = newnode;
         }
     }
-
-    // The final node in the stack will be the root of the expression tree
     return stack[top];
 }
 
-// Function to evaluate the expression tree
-int evaluateExpressionTree(struct Node* root) {
-    // If the node is a leaf node (operand), return its integer value
+int evalExpTree(NODE* root) {
     if (!isOperator(root->data)) {
-        return root->data - '0';  // Convert char to int
+        return root->data - '0';
     }
 
-    // Recursively evaluate the left and right subtrees
-    int leftVal = evaluateExpressionTree(root->left);
-    int rightVal = evaluateExpressionTree(root->right);
+    int leftVal = evalExpTree(root->left);
+    int rightVal = evalExpTree(root->right);
 
-    // Apply the operator at the root
     switch (root->data) {
         case '+': return leftVal + rightVal;
         case '-': return leftVal - rightVal;
@@ -71,34 +55,27 @@ int evaluateExpressionTree(struct Node* root) {
     return 0;
 }
 
-// In-order Traversal (for testing purposes)
-void inorderTraversal(struct Node* root) {
+void inorder(NODE* root) {
     if (root == NULL) {
         return;
     }
-    inorderTraversal(root->left);
+    inorder(root->left);
     printf("%c ", root->data);
-    inorderTraversal(root->right);
+    inorder(root->right);
 }
 
-// Main function to test the program
-int main() {
+void main() {
     char postfix[100];
     
-    printf("Enter a valid postfix expression (e.g. '53+82-*'): ");
+    printf("Enter a valid postfix expression: ");
     scanf("%s", postfix);
     
-    // Construct the expression tree
-    struct Node* root = constructTree(postfix);
+    NODE* root = constructTree(postfix);
 
-    // Display in-order traversal of the constructed expression tree
     printf("In-order Traversal of Expression Tree: ");
-    inorderTraversal(root);
-    printf("\n");
+    inorder(root);
 
-    // Evaluate the expression tree
-    int result = evaluateExpressionTree(root);
-    printf("Result of the expression: %d\n", result);
+    int result = evalExpTree(root);
+    printf("\nResult of the expression: %d", result);
 
-    return 0;
-}
+ }
